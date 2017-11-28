@@ -1,0 +1,205 @@
+<html>
+    <script>
+	String.prototype.format = function(args) { 
+		if (arguments.length>0) { 
+		var result = this; 
+		if (arguments.length == 1 && typeof (args) == "object") { 
+		for (var key in args) { 
+		var reg=new RegExp ("({"+key+"})","g"); 
+		result = result.replace(reg, args[key]); 
+		} 
+		} 
+		else { 
+		for (var i = 0; i < arguments.length; i++) { 
+		if(arguments[i]==undefined) 
+		{ 
+		return ""; 
+		} 
+		else 
+		{ 
+		var reg=new RegExp ("({["+i+"]})","g"); 
+		result = result.replace(reg, arguments[i]); 
+		} 
+		} 
+		} 
+		return result; 
+		} 
+		else { 
+		return this; 
+		} 
+	}
+	
+	    var pk_array = [1, 2, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x01, 0x02, 0x0E, 0x0F]
+
+		var pk_pic_array = [
+		    "3","4","5","6","7","8","9","10","J","Q","K","A","2",
+		]
+		
+		var pk_value_array = [
+		    "3","4","5","6","7","8","9","10","J","Q","K","A","2"
+		]
+		
+		var xuan_map = new Map()
+		
+		var cur_player = 1
+	
+	    var player_cards = new Array(new Array(), new Array(), new Array(), new Array());
+
+	    function showCards(player_index){
+		    for(var i=1;i<=18;i++){
+			    document.getElementById("player" + player_index +"_card_" + i).src = ""
+				document.getElementById("player" + player_index +"_card_" + i).style.visibility = "hidden"
+			}
+		    for(var i=1;i<=player_cards[player_index].length;i++){
+			    document.getElementById("player" + player_index +"_card_" + i).src = getCardImg(player_cards[player_index][i-1])
+				document.getElementById("player" + player_index +"_card_" + i).style.visibility="visible"
+			}
+		}
+		
+		function onclickCard(card){
+		    if (xuan_map[card] == true) {
+			    return
+			}
+		    if(player_cards[cur_player].length >= 17){
+			    alert("玩家牌不能超过17张")
+				return
+			}
+			if(cur_player==0 && player_cards[cur_player].length >= 3){
+				alert("地主牌不能超过3张")
+				return
+			}
+			xuan_map[card] = true
+		    player_cards[cur_player].push(parseInt(card))
+			player_cards[cur_player].sort(function(a, b){
+			    if (a < b) return -1;
+				if (a > b) return 1;
+				return 0;
+			});
+			player_cards[cur_player].reverse()
+		    showCards(cur_player)
+			document.getElementById("xuan_" + card).style.visibility="visible"
+		}
+		
+		function onSelectPlayer(i){
+		    cur_player = i
+		}
+		
+		function onClearPlayerCards(i){
+		    for (var j =0;j<player_cards[i].length;j++){
+			    xuan_map[player_cards[i][j]] = false
+				document.getElementById("xuan_" + player_cards[i][j]).style.visibility="hidden"
+			}
+
+		    player_cards[i] = new Array()
+			showCards(i)
+			cur_player = i
+		}
+	
+	    function getCardImg(card){
+		    var color = card & 0x0f
+		    var value = (card & 0xf0) >> 4
+		    if (value == 0x0E) {
+			    return "pk/xiaowang.jpg"
+			}
+			if (value == 0x0F) {
+			    return "pk/xiaowang.jpg"
+			}
+			var colors = ["heitao","hongtao","meihua","fangkuai"]
+			var pic = "pk/{0}_{1}.jpg".format(colors[color], pk_value_array[value%16-1])
+			return pic
+		}
+	</script>
+	<body>
+		<table align='left'>
+			<tr>
+					<script>
+						for (var i=13;i>=1;i--)
+						{
+						    var str = "<td><div style='position:relative;'><img id='{0}' src='pk/heitao_{1}.jpg' onclick='onclickCard({0})' width='70' height='100'/><div style='position:absolute; z-index:2; left:10px; top:20px;visibility:hidden'><label id='xuan_{0}'><font color='blue' size='20'>选</front></label></div></div></td>"
+							document.write(str.format(i*16, pk_pic_array[i-1]));
+						}
+						
+					</script>
+			</tr>
+			<tr>
+					<script>
+						for (var i=13;i>=1;i--)
+						{
+						    var str = "<td><div style='position:relative;'><img id='{0}' src='pk/hongtao_{1}.jpg' onclick='onclickCard({0})' width='70' height='100'/><div style='position:absolute; z-index:2; left:10px; top:20px;visibility:hidden'><label id='xuan_{0}'><font color='blue' size='20'>选</front></label></div></div></td>"
+							document.write(str.format(i*16+1, pk_pic_array[i-1]));
+						}
+					</script>
+			</tr>
+			<tr>
+					<script>
+						for (var i=13;i>=1;i--)
+						{
+						    var str = "<td><div style='position:relative;'><img id='{0}' src='pk/meihua_{1}.jpg' onclick='onclickCard({0})' width='70' height='100'/><div style='position:absolute; z-index:2; left:10px; top:20px;visibility:hidden'><label id='xuan_{0}'><font color='blue' size='20'>选</front></label></div></div></td>"
+							document.write(str.format(i*16+2, pk_pic_array[i-1]));
+						}
+					</script>
+			</tr>
+			<tr>
+					<script>
+						for (var i=13;i>=1;i--)
+						{
+						    var str = "<td><div style='position:relative;'><img id='{0}' src='pk/fangkuai_{1}.jpg' onclick='onclickCard({0})' width='70' height='100'/><div style='position:absolute; z-index:2; left:10px; top:20px;visibility:hidden'><label id='xuan_{0}'><font color='blue' size='20'>选</front></label></div></div></td>"
+							document.write(str.format(i*16+3, pk_pic_array[i-1]));
+						}
+					</script>
+			</tr>
+		</table>
+		<div style='position:absolute;z-index:1;left:50px;top:450px;'>
+		    <h1>玩家1牌</h1>
+			<input type='button' width='150' height='70' value="设置玩家1牌" onclick='onSelectPlayer(1)'/>
+			<input type='button' width='150' height='70' value="清空玩家1牌" onclick='onClearPlayerCards(1)'/>
+		</div>
+		<script>
+			for (var i=1;i<=18;i++)
+			{
+			    var str = "<div style='position:absolute;z-index:{0};left:{1}px;top:{2}px;visibility:hidden'><img src='{3}' width='70' height='100' id='player1_card_{4}'></div>";
+				var result = str.format(i, 10+i*20, 570, "", i);
+				document.write(result);
+			}
+		</script>
+		<div style='position:absolute;z-index:1;left:500px;top:450px;'>
+		    <h1>玩家2牌</h1>
+			<input type='button' width='150' height='70' value="设置玩家2"  onclick='onSelectPlayer(2)'/>
+			<input type='button' width='150' height='70' value="清空玩家2牌"  onclick='onClearPlayerCards(2)'/>
+		</div>
+		<script>
+			for (var i=1;i<=18;i++)
+			{
+			    var str = "<div style='position:absolute;z-index:{0};left:{1}px;top:{2}px;visibility:hidden'><img src='{3}' width='70' height='100' id='player2_card_{4}'></div>";
+				var result = str.format(i, 460+i*20, 570, "", i);
+				document.write(result);
+			}
+		</script>
+		<div style='position:absolute;z-index:1;left:50px;top:650px;'>
+		    <h1>玩家3牌</h1>
+			<input type='button' width='150' height='70' value="设置玩家3牌"  onclick='onSelectPlayer(3)'/>
+			<input type='button' width='150' height='70' value="清空玩家3牌"  onclick='onClearPlayerCards(3)'/>
+		</div>
+		<script>
+			for (var i=1;i<=18;i++)
+			{
+			    var str = "<div style='position:absolute;z-index:{0};left:{1}px;top:{2}px;visibility:hidden'><img src='{3}' width='70' height='100' id='player3_card_{4}'></div>";
+				var result = str.format(i, 10+i*20, 770, "", i);
+				document.write(result);
+			}
+		</script>
+		<div style='position:absolute;z-index:1;left:500px;top:650px;'>
+		    <h1>地主牌</h1>
+			<input type='button' width='150' height='70' value="设置地主牌"  onclick='onSelectPlayer(0)'/>
+			<input type='button' width='150' height='70' value="清空地主牌"  onclick='onClearPlayerCards(0)'/>
+		</div>
+		<script>
+			for (var i=1;i<=18;i++)
+			{
+			    var str = "<div style='position:absolute;z-index:{0};left:{1}px;top:{2}px;visibility:hidden'><img src='{3}' width='70' height='100' id='player0_card_{4}'></div>";
+				var result = str.format(i, 460+i*20, 770, "", i);
+				document.write(result);
+			}
+		</script>
+	</body>
+</html>
